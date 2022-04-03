@@ -2,4 +2,4 @@
 
 ## Module 13 - Relational Databases
 
-### Solutions of The Exercises
+### Solutions to The Exercises
