@@ -2,6 +2,12 @@ const router = require('express').Router();
 
 const { Blog } = require('../models');
 
+const blogFinder = async (req, res, next) => {
+  const id = req.params.id;
+  req.blog = await Blog.findByPk(id);
+  next();
+};
+
 router.get('/', async (req, res) => {
   try {
     const blogs = await Blog.findAll();
@@ -20,14 +26,11 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
-  const id = req.params.id;
-  const likes = req.body.likes;
-  const blog = await Blog.findByPk(id);
-  if (blog) {
+router.put('/:id', blogFinder, async (req, res) => {
+  if (req.blog) {
     try {
-      blog.likes = likes;
-      const response = await blog.save();
+      req.blog.likes = req.body.likes;
+      const response = await req.blog.save();
       res.json(response);
     } catch(error) {
       res.status(404).json({ error: error });
@@ -35,10 +38,8 @@ router.put('/:id', async (req, res) => {
   }
 })
 
-router.delete('/:id', async (req, res) => {
-  const id = req.params.id;
-  const blog = await Blog.findByPk(id);
-  if (blog) {
+router.delete('/:id', blogFinder, async (req, res) => {
+  if (req.blog) {
     try {
       const response = await blog.destroy();
       res.status(204).json(response);
