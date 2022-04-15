@@ -4,48 +4,56 @@ const { Blog } = require('../models');
 
 const blogFinder = async (req, res, next) => {
   const id = req.params.id;
-  req.blog = await Blog.findByPk(id);
-  next();
+  try {
+    req.blog = await Blog.findByPk(id);
+    next();
+  } catch(exception) {
+    next(exception);
+  }
 };
 
 router.get('/', async (req, res) => {
   try {
     const blogs = await Blog.findAll();
     res.json(blogs);
-  } catch(error) {
-    return res.status(404).json({ error });
+  } catch(exception) {
+    return res.status(404).json({ exception });
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     const blog = await Blog.create(req.body);
     res.json(blog);
-  } catch(error) {
-    res.status(400).json({ error });
+  } catch(exception) {
+    next(exception)
   }
 });
 
-router.put('/:id', blogFinder, async (req, res) => {
+router.put('/:id', blogFinder, async (req, res, next) => {
   if (req.blog) {
     try {
       req.blog.likes = req.body.likes;
       const response = await req.blog.save();
       res.json(response);
-    } catch(error) {
-      res.status(404).json({ error: error });
+    } catch(exception) {
+      next(exception);
     }
+  } else {
+    res.status(404).end();
   }
 })
 
 router.delete('/:id', blogFinder, async (req, res) => {
   if (req.blog) {
     try {
-      const response = await blog.destroy();
+      const response = await req.blog.destroy();
       res.status(204).json(response);
-    } catch(err) {
-      res.status(404).json({ err });
+    } catch(exception) {
+      res.status(404).json({ exception });
     }
+  } else {
+    res.status(404).end();
   }
 });
 
