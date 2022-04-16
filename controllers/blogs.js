@@ -26,7 +26,7 @@ router.post('/', async (req, res, next) => {
     const blog = await Blog.create(req.body);
     res.json(blog);
   } catch(exception) {
-    next(exception)
+    next(exception);
   }
 });
 
@@ -50,7 +50,7 @@ router.delete('/:id', blogFinder, async (req, res) => {
       const response = await req.blog.destroy();
       res.status(204).json(response);
     } catch(exception) {
-      res.status(404).json({ exception });
+      return res.status(404).json({ exception });
     }
   } else {
     res.status(404).end();
