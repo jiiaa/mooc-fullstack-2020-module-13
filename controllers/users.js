@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   const { username, password, name } = req.body;
 
   const saltRounds = 10;
@@ -25,7 +25,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:username', async (req, res) => {
+router.put('/:username', async (req, res, next) => {
   const username = req.params.username;
   try {
     const user = await User.findOne({

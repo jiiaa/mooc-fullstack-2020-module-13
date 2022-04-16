@@ -13,6 +13,9 @@ app.use('/api/blogs', blogsRouter);
 app.use('/api/users', usersRouter);
 
 const errorHandler = (err, req, res, next) => {
+  if (err.message.includes('Validation isEmail on username failed')) {
+    return res.status(404).json({ error: 'Username must be a valid email'});
+  }
   res.status(404).json({ error: err.message });
   next(err);
 };

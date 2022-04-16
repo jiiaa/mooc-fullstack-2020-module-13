@@ -10,9 +10,12 @@ User.init({
     autoIncrement: true
   },
   username: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     unique: true,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      isEmail: true
+    }
   },
   passwordHash: {
     type: DataTypes.STRING,
