@@ -63,8 +63,14 @@ router.put('/:id', blogFinder, async (req, res, next) => {
   }
 })
 
-router.delete('/:id', blogFinder, async (req, res) => {
-  if (req.blog) {
+router.delete('/:id', blogFinder, tokenExtractor, async (req, res) => {
+  if (!req.blog) {
+    return res.status(404).json({ error: 'Blog not found'});
+  }
+  if (!req.decodedToken) {
+    return res.status(400).json({ error: 'Token missing or invalid' });
+  }
+  if (req.blog.userId === req.decodedToken.id) {
     try {
       const response = await req.blog.destroy();
       res.status(204).json(response);
@@ -72,7 +78,7 @@ router.delete('/:id', blogFinder, async (req, res) => {
       return res.status(404).json({ exception });
     }
   } else {
-    res.status(404).end();
+    res.status(401).json({ error: 'Only the blog owner can delete the blog'});
   }
 });
 
