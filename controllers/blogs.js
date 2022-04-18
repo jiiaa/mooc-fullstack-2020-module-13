@@ -64,8 +64,8 @@ router.get('/', async (req, res) => {
         ]
     });
     res.json(blogs);
-  } catch(exception) {
-    return res.status(404).json({ exception });
+  } catch(error) {
+    return res.status(404).json({ error: error });
   }
 });
 
@@ -74,8 +74,8 @@ router.post('/', tokenExtractor, async (req, res, next) => {
     const user = await User.findByPk(req.decodedToken.id);
     const blog = await Blog.create({...req.body, userId: user.id});
     res.json(blog);
-  } catch(exception) {
-    next(exception);
+  } catch(error) {
+    next(error);
   }
 });
 
@@ -85,8 +85,8 @@ router.put('/:id', blogFinder, async (req, res, next) => {
       req.blog.likes = req.body.likes;
       const response = await req.blog.save();
       res.json(response);
-    } catch(exception) {
-      next(exception);
+    } catch(error) {
+      next(error);
     }
   } else {
     res.status(404).end();
@@ -104,8 +104,8 @@ router.delete('/:id', blogFinder, tokenExtractor, async (req, res) => {
     try {
       const response = await req.blog.destroy();
       res.status(204).json(response);
-    } catch(exception) {
-      return res.status(404).json({ exception });
+    } catch(error) {
+      return res.status(404).json({ error });
     }
   } else {
     res.status(401).json({ error: 'Only the blog owner can delete the blog'});
