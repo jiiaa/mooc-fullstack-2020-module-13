@@ -32,7 +32,13 @@ const tokenExtractor = (req, res, next) => {
 
 router.get('/', async (req, res) => {
   try {
-    const blogs = await Blog.findAll();
+    const blogs = await Blog.findAll({
+      attributes: { exclude: ['userId'] },
+        include: {
+          model: User,
+          attributes: ['name']
+        }
+    });
     res.json(blogs);
   } catch(exception) {
     return res.status(404).json({ exception });
