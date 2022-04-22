@@ -23,7 +23,20 @@ Blog.init({
   likes: {
     type: DataTypes.INTEGER,
     defaultValue: 0
-  }
+  },
+  year: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      isMaxCurrentYear(year) {
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        if (year < 1991 || year > currentYear) {
+          throw new Error('The year of published must be between 1991 and the current year');
+        }
+      }
+    }
+  },
 }, {
   sequelize,
   underscored: true,
