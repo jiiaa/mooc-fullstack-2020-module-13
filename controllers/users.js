@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 
 const { User } = require('../models');
 const { Blog } = require('../models');
+const { ReadList } = require('../models');
 
 router.get('/', async (req, res) => {
   try {
@@ -30,6 +31,25 @@ router.post('/', async (req, res, next) => {
     res.json(user);
   } catch(exception) {
     next(exception);
+  }
+});
+
+router.get('/:id', async (req, res, next) => {
+  try {
+    const users = await User.findAll({
+      attributes: ['name', 'username'],
+      include: {
+        model: Blog,
+        as: 'readBlogs',
+        attributes: { exclude: ['createdAt', 'updatedAt', 'userId']},
+        through: {
+          attributes: []
+        },
+      },
+    });
+    res.json(users);
+  } catch(error) {
+    next(error);
   }
 });
 
