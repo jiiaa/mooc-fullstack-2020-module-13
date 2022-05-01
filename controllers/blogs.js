@@ -4,8 +4,9 @@ const { Op } = require('sequelize');
 
 const { SECRET } = require('../util/config');
 const { Blog } = require('../models');
-const User = require('../models/user');
+const { User } = require('../models/');
 
+// Find a blog by primary key (id)
 const blogFinder = async (req, res, next) => {
   const id = req.params.id;
   try {
@@ -16,6 +17,7 @@ const blogFinder = async (req, res, next) => {
   }
 };
 
+// Verify the token and extract the user info
 const tokenExtractor = (req, res, next) => {
   const authorization = req.get('authorization');
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
@@ -31,6 +33,7 @@ const tokenExtractor = (req, res, next) => {
   next();
 }
 
+// Get all blogs or search blogs by string in author or in title
 router.get('/', async (req, res) => {
   let where = {};
 
