@@ -35,6 +35,12 @@ router.post('/', async (req, res, next) => {
 });
 
 router.get('/:id', async (req, res, next) => {
+  const where = {};
+
+  if (req.query.read) {
+    where.isRead = req.query.read
+  }
+
   try {
     const users = await User.findAll({
       attributes: ['name', 'username'],
@@ -43,7 +49,8 @@ router.get('/:id', async (req, res, next) => {
         as: 'readBlogs',
         attributes: { exclude: ['createdAt', 'updatedAt', 'userId']},
         through: {
-          attributes: ['id', 'isRead']
+          attributes: ['id', 'isRead'],
+          where,
         },
       },
     });
