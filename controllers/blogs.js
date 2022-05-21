@@ -5,6 +5,7 @@ const { Op } = require('sequelize');
 const { SECRET } = require('../util/config');
 const { Blog } = require('../models');
 const { User } = require('../models/');
+const { Token } = require('../models');
 
 // Find a blog by primary key (id)
 const blogFinder = async (req, res, next) => {
@@ -17,12 +18,21 @@ const blogFinder = async (req, res, next) => {
   }
 };
 
-// Verify the token and extract the user info
-const tokenExtractor = (req, res, next) => {
+// Verify the token, session and user and extract user data
+const tokenExtractor = async (req, res, next) => {
   const authorization = req.get('authorization');
+  const token = authorization.substring(7);
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     try {
       req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
+      const sessionValid = await Token.findOne({ where: { token }});
+      if (!sessionValid) {
+        res.status(401).json({ error: 'Token invalid' });
+      }
+      const user = await User.findByPk(req.decodedToken.id);
+      if (user.disabled === true) {
+        return res.status(403).json({ error: 'User is disabled' });
+      }
     } catch (error){
       console.log({ error });
       return res.status(401).json({ error: 'Token invalid' });
@@ -74,7 +84,6 @@ router.get('/', async (req, res) => {
 
 router.post('/', tokenExtractor, async (req, res, next) => {
   try {
-    const user = await User.findByPk(req.decodedToken.id);
     const blog = await Blog.create({...req.body, userId: user.id});
     res.json(blog);
   } catch(error) {
@@ -99,9 +108,6 @@ router.put('/:id', blogFinder, async (req, res, next) => {
 router.delete('/:id', blogFinder, tokenExtractor, async (req, res) => {
   if (!req.blog) {
     return res.status(404).json({ error: 'Blog not found'});
-  }
-  if (!req.decodedToken) {
-    return res.status(400).json({ error: 'Token missing or invalid' });
   }
   if (req.blog.userId === req.decodedToken.id) {
     try {

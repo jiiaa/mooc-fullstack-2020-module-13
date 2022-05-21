@@ -5,6 +5,7 @@ const { User } = require('../models');
 const { Blog } = require('../models');
 const { ReadList } = require('../models');
 
+// Get all users and their blogs
 router.get('/', async (req, res) => {
   try {
     const users = await User.findAll({
@@ -21,6 +22,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Create a new user
 router.post('/', async (req, res, next) => {
   const { username, password, name } = req.body;
 
@@ -34,6 +36,7 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+// Get a user's reading list
 router.get('/:id', async (req, res, next) => {
   const where = {};
 
@@ -60,6 +63,7 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
+// Change user's name
 router.put('/:username', async (req, res, next) => {
   const username = req.params.username;
   try {

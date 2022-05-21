@@ -5,6 +5,7 @@ const { Blog } = require('../models');
 const User = require('../models/user');
 const { sequelize } = require('../util/db');
 
+// Get all authors, count of blogs and sum of likes of those blogs
 router.get('/', async (req, res) => {
   try {
     const authors = await Blog.findAll({
