@@ -34,7 +34,7 @@ const tokenExtractor = async (req, res, next) => {
         return res.status(403).json({ error: 'User is disabled' });
       }
     } catch (error){
-      console.log({ error });
+      console.error({ error });
       return res.status(401).json({ error: 'Token invalid' });
     }
   } else {
